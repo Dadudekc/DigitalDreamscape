@@ -1,96 +1,68 @@
 # -------------------------------------------------------------------
 # File Path: /DigitalDreamscape/main.py
-# Description: This file serves as the entry point for the Digital Dreamscape game. 
-# It handles game initialization, the main game loop, and event management.
+# Description: Main entry point for the game loop.
 # -------------------------------------------------------------------
 
-import time
+# -------------------------------------------------------------------
+# Section 1: Import necessary modules
+# -------------------------------------------------------------------
 from game_core.state import GameState
 from game_core.character import Character
-from game_core.mission import MissionManager
-from ui.cli import CLI
+import time  # Used for simulating real-time updates (optional)
 
 # -------------------------------------------------------------------
-# Section 1: Game Initialization
+# Section 2: Initialize game state and character
 # -------------------------------------------------------------------
-
 def initialize_game():
-    """Initialize the game by setting up the game state, player character, and missions."""
-    print("Initializing Digital Dreamscape...")
+    print("Initializing game...")
 
-    # Create an initial game state
-    game_state = GameState()
+    # Initialize game state
+    state = GameState()
 
-    # Create the player character
-    player = Character(name="Victor", abilities=['cosmic_manipulation', 'super_strength'])
+    # Create a player character
+    player = Character(name="Victor", health=100, abilities=["laser_eyes", "super_strength"])
 
-    # Initialize the mission manager and set up the first mission
-    mission_manager = MissionManager()
-    mission_manager.load_initial_missions()
+    # Set initial inventory and mission progress
+    state.inventory = ["Health Potion", "Shield"]
+    state.mission_progress = 0
 
-    # Initialize CLI or GUI based on the interface preference
-    cli = CLI()
-
-    print("Game Initialized Successfully.")
-    return game_state, player, mission_manager, cli
+    print(f"Welcome, {player.name}!")
+    return state, player
 
 # -------------------------------------------------------------------
-# Section 2: Game Update Logic
+# Section 3: Game loop logic
 # -------------------------------------------------------------------
+def game_loop():
+    state, player = initialize_game()
 
-def update_game(game_state, player, mission_manager, cli):
-    """
-    Update the game logic, handle missions, and interact with the player.
-    This is the main loop that continuously runs, processing player input and game events.
-    """
-    print("Entering the Game Loop...")
+    running = True
+    while running:
+        print("\n--- Game Update ---")
+        # Display game state
+        print(f"Health: {player.health}")
+        print(f"Inventory: {state.inventory}")
+        print(f"Mission Progress: {state.mission_progress}%")
 
-    # Main game loop
-    while game_state.is_running:
-        # Get player input through CLI for now (could be GUI later)
-        player_input = cli.get_player_input()
+        # Simulate player input (you'll replace this with actual input handling later)
+        user_input = input("Enter '1' to continue, 'q' to quit: ").strip()
 
-        # Handle different inputs like movement, combat, interaction, etc.
-        if player_input == "explore":
-            mission_manager.process_exploration(player)
-        elif player_input == "combat":
-            mission_manager.process_combat(player)
-        elif player_input == "quit":
-            game_state.is_running = False
+        if user_input == '1':
+            # Update mission progress for now (you'll replace this with more complex logic)
+            state.mission_progress += 10
+            if state.mission_progress >= 100:
+                print("Mission complete!")
+                running = False
+        elif user_input == 'q':
+            print("Exiting game...")
+            running = False
         else:
-            print(f"Unknown command: {player_input}")
+            print("Invalid input.")
 
-        # Update game state as per player actions or events
-        mission_manager.update_missions(game_state, player)
-
-        # Add some delay to simulate real-time events
+        # Simulate a game update delay
         time.sleep(1)
-
-# -------------------------------------------------------------------
-# Section 3: Event Handling
-# -------------------------------------------------------------------
-
-def handle_event(game_state, event_type, event_data):
-    """Handles game events dynamically triggered by player actions or world state."""
-    if event_type == "mission_complete":
-        print(f"Mission '{event_data}' completed! Reward collected.")
-        game_state.update_mission_progress(event_data)
-    elif event_type == "character_death":
-        print(f"Player {event_data} has been defeated.")
-        game_state.is_running = False
-    else:
-        print(f"Event {event_type} triggered with data: {event_data}")
 
 # -------------------------------------------------------------------
 # Example Usage (Main Section)
 # -------------------------------------------------------------------
-
 if __name__ == "__main__":
-    # Initialize the game
-    game_state, player, mission_manager, cli = initialize_game()
-
-    # Main update loop
-    update_game(game_state, player, mission_manager, cli)
-    
-    # If game is over, exit
-    print("Game Over. Thanks for playing!")
+    game_loop()
